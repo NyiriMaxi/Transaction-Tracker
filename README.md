@@ -1,4 +1,4 @@
-# TransTracker — MBH Bank SMS fizetés követő
+# TransTracker — SMS fizetés követő
 
 MacroDroid → Python API → ML kategorizáló → CSV
 
