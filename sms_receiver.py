@@ -40,17 +40,42 @@ def save_transaction(date: str, amount: float, subject: str,
         writer.writerow([date, amount, subject, category, f"{confidence:.2f}", tx_type, raw_sms])
 
 
+def extract_message(raw: str) -> str | None:
+    """
+    Kinyeri a 'message' értékét a JSON törzsből.
+    Toleráns az escapeletlen idézőjelekre (MacroDroid bug).
+    Először standard JSON parse-t próbál, majd regex fallback-et.
+    """
+    import json, re
+    try:
+        data = json.loads(raw)
+        return data.get("message")
+    except (json.JSONDecodeError, ValueError):
+        # Fallback: "message":"<érték>" keresése regex-szel
+        m = re.search(r'"message"\s*:\s*"(.*)"', raw, re.DOTALL)
+        if m:
+            return m.group(1)
+        return None
+
+
 @app.route("/sms", methods=["POST"])
 def receive_sms():
-    data = request.get_json(silent=True)
-    if not data or "message" not in data:
-        return jsonify({"error": "Hiányzó 'message' mező"}), 400
+    raw = request.get_data(as_text=True)
+    print(f"[SMS] Nyers kérés: {repr(raw[:300])}")
 
-    sms_body = data["message"]
+    sms_body = extract_message(raw)
+
+    if sms_body is None:
+        print(f"[HIBA] 'message' mező nem található. Nyers: {repr(raw[:300])}")
+        return jsonify({"error": "Hiányzó 'message' mező", "raw": raw[:300]}), 400
+
+    print(f"[SMS] Üzenet: {repr(sms_body)}")
+
     transaction = parse_sms(sms_body)
 
     if transaction is None:
-        return jsonify({"status": "skip", "reason": "Nem banki SMS (nincs összeg)"}), 200
+        print(f"[SKIP] Parser nem talált összeget/helyet ebben: {repr(sms_body)}")
+        return jsonify({"status": "skip", "reason": "Parser nem talált tranzakciót", "sms": sms_body}), 200
 
     category, confidence = predict(transaction.subject)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 # Összeg: közvetlenül a "tranzakció" után, pl. "5490Ft" vagy "5 490Ft" vagy "5 490,50Ft"
-_AMOUNT_RE = re.compile(r"tranzakci[oó]\s+([\d\s]+(?:,\d{1,2})?)\s*Ft", re.IGNORECASE)
+_AMOUNT_RE = re.compile(r"tranzakci[oóò]\s+([\d\s]+(?:,\d{1,2})?)\s*Ft", re.IGNORECASE)
 
 # Dátum: "időpont: 2024.01.15 14:23:45"
 _DATE_RE = re.compile(r"id[oő]pont:\s*(\d{4}\.\d{2}\.\d{2}\s+\d{2}:\d{2}:\d{2})", re.IGNORECASE)
