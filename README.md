@@ -26,13 +26,12 @@ python sms_receiver.py   # API szerver indítása
 
 ## MacroDroid beállítás
 
-1. **Trigger:** SMS érkezett → Feladó szűrő: `MBH` (vagy a bank telefonszáma)
+1. **Trigger:** SMS érkezett → Feladó szűrő: `telefonszám` (de lehet akár más is, én esetemben telefonszám)
 2. **Action:** HTTP POST
    - URL: `http://<PC_IP>:5000/sms`
-   - Body: `{"sender": "{sms_sender}", "body": "{sms_body}"}`
+   - Body: `{"name": "{sms_name}", "message": "{sms_message}"}`
    - Header: `Content-Type: application/json`
 
-A PC IP-t a `ipconfig` paranccsal nézd meg (IPv4 cím).  
 A telefonnak és a PC-nek ugyanazon a WiFi-n kell lennie.
 
 ## API végpontok
