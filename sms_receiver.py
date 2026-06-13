@@ -43,10 +43,10 @@ def save_transaction(date: str, amount: float, subject: str,
 @app.route("/sms", methods=["POST"])
 def receive_sms():
     data = request.get_json(silent=True)
-    if not data or "body" not in data:
-        return jsonify({"error": "Hiányzó 'body' mező"}), 400
+    if not data or "message" not in data:
+        return jsonify({"error": "Hiányzó 'message' mező"}), 400
 
-    sms_body = data["body"]
+    sms_body = data["message"]
     transaction = parse_sms(sms_body)
 
     if transaction is None:
