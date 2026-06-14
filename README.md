@@ -1,6 +1,12 @@
 # TransTracker — SMS fizetés követő
 
-MacroDroid → Python API → ML kategorizáló → CSV
+MacroDroid → Python API → ML kategorizáló → db
+
+## Summary
+ 
+Használathoz szükséges Macrodroid és Tailsclae ha más hálózaton is szeretnénk. Macrodroidnál beállítandó hogy az SMS kitől jön, lehet ez telefonszám vagy névjegy, csak felismerje, majd a HTTP kéréseknél meg kell adni az API címet.
+Amint ez megvan, minden tranzakció ami azon az értesítésen keresztül érkezik (és megadott formátumban van), megjelenik az adatbázisban, ahol szabadon kinyerhető akár havonta vagy az egész egyszerre kategóriánként besorolva.
+ML segítségével történik a kategórizálás, így előfordulhat hogy rossz kategória lesz megadva, de kézzel is meg lehet adni a kategóriát /label POST kéréssel és további tanító anyagok közé rakni a train.py segítségével, amivel kiküszöbölhető a félrediagnosztikálás a következő alkalommal.
 
 ## Architektúra
 
@@ -13,7 +19,7 @@ Telefon (MacroDroid)
                             │
                     categorizer.py      ← TF-IDF + Logistic Regression
                             │
-                    data/transactions.csv
+                    data/transactions.db
 ```
 
 ## Telepítés
@@ -68,7 +74,7 @@ Vagy közvetlenül szerkeszd a `data/training_data.csv`-t, majd futtasd a `train
 ├── train.py              # Tanítás / újratanítás
 ├── generate_training_data.py  # Seed tanítóadat generáló
 ├── data/
-│   ├── transactions.csv  # Rögzített tranzakciók
+│   ├── transactions.db  # Rögzített tranzakciók
 │   └── training_data.csv # ML tanítóadat (szerkeszthető)
 └── model/
     └── classifier.pkl    # Mentett modell
