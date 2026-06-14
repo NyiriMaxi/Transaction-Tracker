@@ -4,7 +4,7 @@ MacroDroid → Python API → ML kategorizáló → db
 
 ## Summary
  
-Használathoz szükséges Macrodroid és Tailsclae ha más hálózaton is szeretnénk. Macrodroidnál beállítandó hogy az SMS kitől jön, lehet ez telefonszám vagy névjegy, csak felismerje, majd a HTTP kéréseknél meg kell adni az API címet.
+Használathoz szükséges Macrodroid és Tailscale ha más hálózaton is szeretnénk. Macrodroidnál beállítandó hogy az SMS kitől jön, lehet ez telefonszám vagy névjegy, csak felismerje, majd a HTTP kéréseknél meg kell adni az API címet.
 Amint ez megvan, minden tranzakció ami azon az értesítésen keresztül érkezik (és megadott formátumban van), megjelenik az adatbázisban, ahol szabadon kinyerhető akár havonta vagy az egész egyszerre kategóriánként besorolva.
 ML segítségével történik a kategórizálás, így előfordulhat hogy rossz kategória lesz megadva, de kézzel is meg lehet adni a kategóriát /label POST kéréssel és további tanító anyagok közé rakni a train.py segítségével, amivel kiküszöbölhető a félrediagnosztikálás a következő alkalommal.
 
