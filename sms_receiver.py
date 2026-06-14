@@ -17,9 +17,10 @@ from flask import Flask, jsonify, request
 
 from categorizer import predict, add_training_example
 from sms_parser import parse_sms
+from database import TransactionDB
 
 app = Flask(__name__)
-
+db=TransactionDB()
 TRANSACTIONS_CSV = os.path.join(os.path.dirname(__file__), "data", "transactions.csv")
 CSV_HEADERS = ["dátum", "összeg", "tárgy", "kategória", "konfidencia", "típus", "nyers_sms"]
 
@@ -32,65 +33,28 @@ def ensure_csv():
             writer.writerow(CSV_HEADERS)
 
 
-def save_transaction(date: str, amount: float, subject: str,
-                     category: str, confidence: float,
-                     tx_type: str, raw_sms: str) -> None:
-    with open(TRANSACTIONS_CSV, "a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow([date, amount, subject, category, f"{confidence:.2f}", tx_type, raw_sms])
-
-
-def extract_message(raw: str) -> str | None:
-    """
-    Kinyeri a 'message' értékét a JSON törzsből.
-    Toleráns az escapeletlen idézőjelekre (MacroDroid bug).
-    Először standard JSON parse-t próbál, majd regex fallback-et.
-    """
-    import json, re
-    try:
-        data = json.loads(raw)
-        return data.get("message")
-    except (json.JSONDecodeError, ValueError):
-        # Fallback: "message":"<érték>" keresése regex-szel
-        m = re.search(r'"message"\s*:\s*"(.*)"', raw, re.DOTALL)
-        if m:
-            return m.group(1)
-        return None
+def save_transaction(date: str, amount: float, subject: str, category: str) -> int:
+    return db.insert(date, amount, subject, category)
 
 
 @app.route("/sms", methods=["POST"])
 def receive_sms():
-    raw = request.get_data(as_text=True)
-    print(f"[SMS] Nyers kérés: {repr(raw[:300])}")
+    data = request.get_json(silent=True)
+    if not data or "message" not in data:
+        return jsonify({"error": "Hiányzó 'message' mező"}), 400
 
-    sms_body = extract_message(raw)
-
-    if sms_body is None:
-        print(f"[HIBA] 'message' mező nem található. Nyers: {repr(raw[:300])}")
-        return jsonify({"error": "Hiányzó 'message' mező", "raw": raw[:300]}), 400
-
-    print(f"[SMS] Üzenet: {repr(sms_body)}")
-
+    sms_body = data["message"]
     transaction = parse_sms(sms_body)
 
     if transaction is None:
-        print(f"[SKIP] Parser nem talált összeget/helyet ebben: {repr(sms_body)}")
-        return jsonify({"status": "skip", "reason": "Parser nem talált tranzakciót", "sms": sms_body}), 200
+        return jsonify({"status": "skip", "reason": "Nem banki SMS (nincs összeg)"}), 200
 
     category, confidence = predict(transaction.subject)
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     sms_date = transaction.date or now
 
-    save_transaction(
-        date=sms_date,
-        amount=transaction.amount,
-        subject=transaction.subject,
-        category=category,
-        confidence=confidence,
-        tx_type="POS",
-        raw_sms=transaction.raw_sms,
-    )
+    save_transaction(sms_date, transaction.amount, transaction.subject, category)
 
     result = {
         "status": "ok",
@@ -120,33 +84,35 @@ def label_transaction():
 
 @app.route("/transactions", methods=["GET"])
 def get_transactions():
-    """Visszaadja az összes tranzakciót JSON-ban."""
-    if not os.path.exists(TRANSACTIONS_CSV):
-        return jsonify([]), 200
-    rows = []
-    with open(TRANSACTIONS_CSV, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        rows = list(reader)
-    return jsonify(rows), 200
+    """Visszaadja az összes tranzakciót JSON-ban (adatbázisból)."""
+    result = {
+        row["id"]: {
+            "datum": row["datum"],
+            "osszeg": row["osszeg"],
+            "targy": row["targy"],
+            "kategoria": row["kategoria"],
+        }
+        for row in db.get_all()
+    }
+    return jsonify(result), 200
 
 
 @app.route("/summary", methods=["GET"])
 def get_summary():
     """Kategóriánkénti összesítő az aktuális hónapra."""
-    if not os.path.exists(TRANSACTIONS_CSV):
-        return jsonify({}), 200
+    #if not os.path.exists(TRANSACTIONS_CSV):
+    #    return jsonify({}), 200
 
-    current_month = datetime.now().strftime("%Y-%m")
-    totals: dict[str, float] = {}
-
-    with open(TRANSACTIONS_CSV, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            if row["dátum"].startswith(current_month):
-                cat = row["kategória"]
-                totals[cat] = totals.get(cat, 0.0) + float(row["összeg"])
-
-    return jsonify(totals), 200
+    month = request.args.get("month")
+    totals = db.get_monthly_summary(month)
+    result = {
+        kat: {
+            "összeg": total,
+            "tárgyak": [r["targy"] for r in db.get_by_category(kat)],
+        }
+        for kat, total in totals.items()
+    }
+    return jsonify(result), 200
 
 
 if __name__ == "__main__":
