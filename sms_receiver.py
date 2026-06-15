@@ -13,9 +13,10 @@ import csv
 import os
 from datetime import datetime
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 
-from categorizer import predict, add_training_example
+from categorizer import predict, add_training_example, train, _model
+import categorizer
 from sms_parser import parse_sms
 from database import TransactionDB
 
@@ -35,6 +36,11 @@ def ensure_csv():
 
 def save_transaction(date: str, amount: float, subject: str, category: str) -> int:
     return db.insert(date, amount, subject, category)
+
+
+@app.route("/")
+def index():
+    return render_template("index.html")
 
 
 @app.route("/sms", methods=["POST"])
@@ -79,7 +85,9 @@ def label_transaction():
         return jsonify({"error": "Hiányzó 'subject' vagy 'category'"}), 400
 
     add_training_example(data["subject"], data["category"])
-    return jsonify({"status": "ok", "message": "Mentve. Futtasd a train.py-t!"}), 200
+    train()
+    categorizer._model = None  # következő predict() újratölti a friss modellt
+    return jsonify({"status": "ok", "message": "Mentve és újratanítva."}), 200
 
 
 @app.route("/transactions", methods=["GET"])
