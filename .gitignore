@@ -2,3 +2,8 @@
 testins.py
 *.db
 .claude
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
