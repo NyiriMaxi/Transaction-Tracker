@@ -1,3 +1,4 @@
 *.csv
 testins.py
 *.db
+.claude

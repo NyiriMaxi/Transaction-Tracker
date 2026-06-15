@@ -69,7 +69,7 @@ Vagy közvetlenül szerkeszd a `data/training_data.csv`-t, majd futtasd a `train
 
 ```
 ├── sms_receiver.py       # Flask API
-├── sms_parser.py         # MBH SMS regex parser
+├── sms_parser.py         #SMS regex parser
 ├── categorizer.py        # ML modell
 ├── train.py              # Tanítás / újratanítás
 ├── generate_training_data.py  # Seed tanítóadat generáló
