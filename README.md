@@ -53,7 +53,7 @@ Amennyiben ismeretlen kategória is jelen volt, újratanítása a ML modellnek l
 | `/transactions` | GET | Összes tranzakció JSON-ban |
 | `/summary` | GET | Havi összesítő kategóriánként |
 | `/label` | POST | Ismeretlen tárgy kézzel megcímkézése |
-| `/` | POST | Frontend ami a `/summary` végpontot használja |
+| `/` |  | Frontend a kategóriák megjelenítésére |
 
 ## ML modell továbbfejlesztése
 
