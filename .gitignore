@@ -1,8 +1,9 @@
 # Virtuális környezet
-Lib/
+Lib/site-packages
 Include/
 Scripts/
 pyvenv.cfg
+
 
 # Python
 __pycache__/
