@@ -40,6 +40,11 @@ python sms_receiver.py   # API szerver indítása
 
 A telefonnak és a PC-nek ugyanazon a WiFi-n kell lennie.
 
+## Frontend
+
+A frontend a `/summary` és `/transactions` végpontok segítségével megjeleníti egy pie chart alakban a hónapokra kiosztott költést, kategóriánként.
+Amennyiben ismeretlen kategória is jelen volt, újratanítása a ML modellnek lehetséges az oldalon közvetlenül. 
+
 ## API végpontok
 
 | Végpont | Metódus | Leírás |
@@ -48,6 +53,7 @@ A telefonnak és a PC-nek ugyanazon a WiFi-n kell lennie.
 | `/transactions` | GET | Összes tranzakció JSON-ban |
 | `/summary` | GET | Havi összesítő kategóriánként |
 | `/label` | POST | Ismeretlen tárgy kézzel megcímkézése |
+| `/` |  | Frontend a kategóriák megjelenítésére |
 
 ## ML modell továbbfejlesztése
 
