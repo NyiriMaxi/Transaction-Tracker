@@ -1,9 +1,28 @@
-*.csv
-testins.py
-*.db
-.claude
+# Virtuális környezet
+Lib/
+Include/
+Scripts/
+pyvenv.cfg
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Modell
+model/
 *.pkl
+
+# Adatbázis és tranzakciók
+data/transactions.db
+data/transactions.csv
+
+# IDE / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Claude Code
+.claude/
