@@ -27,12 +27,12 @@ def test_index_returns_200(client):
 
 
 def test_sms_missing_message_returns_400(client):
-    res = client.post("/sms", json={"sender": "MBH"})
+    res = client.post("/sms", json={"sender": "bank"})
     assert res.status_code == 400
 
 
 def test_sms_non_bank_message_returns_skip(client):
-    res = client.post("/sms", json={"message": "Kedves ügyfelünk, akciós ajánlat!"})
+    res = client.post("/sms", json={"message": "asd"})
     assert res.status_code == 200
     assert res.get_json()["status"] == "skip"
 
