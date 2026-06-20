@@ -20,11 +20,11 @@ Telefon (MacroDroid)
 
 ## Funkciók
 
-- **SMS feldolgozás** — Banki tranzakciós SMS-ek automatikus fogadása MacroDroid-on keresztül
-- **ML kategorizálás** — TF-IDF + Logistic Regression modell, karakter n-gram alapú
-- **Web dashboard** — havi kördiagram, tranzakcióslista, hónapnavigáció
-- **Docker támogatás** — konténerizált futtatás
-- **CI** — GitHub Actions automatikusan futtatja a teszteket minden push-ra
+- **SMS feldolgozás** - Banki tranzakciós SMS-ek automatikus fogadása MacroDroid-on keresztül
+- **ML kategorizálás** - TF-IDF + Logistic Regression modell, karakter n-gram alapú
+- **Web dashboard** - havi kördiagram, tranzakcióslista, hónapnavigáció
+- **Docker támogatás** - konténerizált futtatás
+- **CI** - GitHub Actions automatikusan futtatja a teszteket minden push-ra
 
 ## Dashboard
 
