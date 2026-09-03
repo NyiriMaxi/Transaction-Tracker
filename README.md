@@ -28,7 +28,8 @@ Telefon (MacroDroid)
 
 ## Dashboard
 
-*(screenshot hamarosan)*
+<img width="1257" height="521" alt="image" src="https://github.com/user-attachments/assets/e02c28b6-9363-4f72-a647-7f3ac31e9f32" />
+
 
 ## Telepítés
 
